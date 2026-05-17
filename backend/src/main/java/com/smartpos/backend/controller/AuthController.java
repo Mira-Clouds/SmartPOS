@@ -17,16 +17,10 @@ public class AuthController {
     @PostMapping("/login")
     public String login(@RequestBody LoginRequest request) {
 
-        boolean result = authService.login(
+        return authService.login(
                 request.getUsername(),
                 request.getPassword()
         );
-
-        if(result) {
-            return "Login Success";
-        } else {
-            return "Login Failed";
-        }
     }
 
     // REGISTER

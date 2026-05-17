@@ -1,5 +1,8 @@
 package com.smartpos.backend.entity;
 
+import java.util.List;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,7 +20,7 @@ public class Bill {
     private LocalDateTime billDate;
 
     @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL)
-    private List<BillItem> items;
+    private List<BillItem> billItems;
 
     // Constructors
 
@@ -46,11 +49,11 @@ public class Bill {
         this.billDate = billDate;
     }
 
-    public List<BillItem> getItems() {
-        return items;
+    public List<BillItem> getBillItems() {
+        return billItems;
     }
 
-    public void setItems(List<BillItem> items) {
-        this.items = items;
+    public void setBillItems(List<BillItem> billItems) {
+        this.billItems = billItems;
     }
 }

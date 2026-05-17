@@ -3,9 +3,12 @@ package com.smartpos.backend.service;
 import com.smartpos.backend.dto.RegisterRequest;
 import com.smartpos.backend.entity.User;
 import com.smartpos.backend.repository.UserRepository;
+import com.smartpos.backend.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.smartpos.backend.entity.Role;
+
+import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -14,12 +17,22 @@ public class AuthService {
     private UserRepository userRepository;
 
     // LOGIN
-    public boolean login(String username, String password) {
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    public String login(String username, String password) {
 
         User user = userRepository.findByUsername(username);
 
-        return user != null &&
-                user.getPassword().equals(password);
+        if(user == null) {
+            return "User not found";
+        }
+
+        if(!user.getPassword().equals(password)) {
+            return "Invalid password";
+        }
+
+        return jwtUtil.generateToken(user.getUsername());
     }
 
     // REGISTER
