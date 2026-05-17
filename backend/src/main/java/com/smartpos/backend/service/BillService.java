@@ -7,8 +7,7 @@ import com.smartpos.backend.repository.BillRepository;
 import com.smartpos.backend.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class BillService {
@@ -21,43 +20,31 @@ public class BillService {
 
     public Bill saveBill(Bill bill) {
 
-        double total = 0;
-
-        // LOOP THROUGH ITEMS
-        for (BillItem item : bill.getItems()) {
+        // Loop through bill items
+        for (BillItem item : bill.getBillItems()) {
 
             Product product = productRepository.findById(
                     item.getProduct().getId()
             ).orElseThrow(() -> new RuntimeException("Product not found"));
 
-            // CHECK STOCK
-            if (product.getQuantity() < item.getQuantity()) {
-                throw new RuntimeException(
-                        "Not enough stock for " + product.getName()
-                );
-            }
-
-            // REDUCE STOCK
+            // Reduce stock quantity
             product.setQuantity(
                     product.getQuantity() - item.getQuantity()
             );
 
             productRepository.save(product);
 
-            // ITEM TOTAL
-            item.setPrice(product.getPrice() * item.getQuantity());
+            // Set product price to bill item
+            item.setPrice(product.getPrice());
 
-            // ADD TO BILL TOTAL
-            total += item.getPrice();
-
-            // CONNECT BILL
+            // Connect bill with bill item
             item.setBill(bill);
         }
 
-        bill.setTotalAmount(total);
-
-        bill.setBillDate(LocalDateTime.now());
-
         return billRepository.save(bill);
+    }
+
+    public List<Bill> getAllBills() {
+        return billRepository.findAll();
     }
 }
