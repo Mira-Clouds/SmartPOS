@@ -1,5 +1,6 @@
 package com.smartpos.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -14,22 +15,19 @@ public class BillItem {
 
     private Double price;
 
-    // MANY ITEMS -> ONE BILL
+    private Double subtotal;
+
     @ManyToOne
     @JoinColumn(name = "bill_id")
+    @JsonBackReference
     private Bill bill;
 
-    // MANY ITEMS -> ONE PRODUCT
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
 
-    // Constructors
-
     public BillItem() {
     }
-
-    // Getters and Setters
 
     public Long getId() {
         return id;
@@ -49,6 +47,14 @@ public class BillItem {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public Double getSubtotal() {
+        return subtotal;
+    }
+
+    public void setSubtotal(Double subtotal) {
+        this.subtotal = subtotal;
     }
 
     public Bill getBill() {

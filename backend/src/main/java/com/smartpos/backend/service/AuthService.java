@@ -1,14 +1,14 @@
 package com.smartpos.backend.service;
 
 import com.smartpos.backend.dto.RegisterRequest;
+import com.smartpos.backend.entity.Role;
 import com.smartpos.backend.entity.User;
 import com.smartpos.backend.repository.UserRepository;
 import com.smartpos.backend.security.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import com.smartpos.backend.entity.Role;
 
-import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
@@ -16,30 +16,36 @@ public class AuthService {
     @Autowired
     private UserRepository userRepository;
 
-    // LOGIN
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    // LOGIN
     public String login(String username, String password) {
 
         User user = userRepository.findByUsername(username);
 
-        if(user == null) {
+        if (user == null) {
             return "User not found";
         }
 
-        if(!user.getPassword().equals(password)) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             return "Invalid password";
         }
 
-        return jwtUtil.generateToken(user.getUsername());
+        return jwtUtil.generateToken(
+                user.getUsername(),
+                user.getRole()
+        );
     }
 
     // REGISTER
     public String register(RegisterRequest request) {
 
         // username already exists
-        if(userRepository.findByUsername(request.getUsername()) != null) {
+        if (userRepository.findByUsername(request.getUsername()) != null) {
             return "Username already exists";
         }
 
@@ -49,8 +55,15 @@ public class AuthService {
         user.setEmail(request.getEmail());
         user.setPhoneNumber(request.getPhoneNumber());
         user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
-        user.setRole(Role.valueOf(request.getRole()));
+
+        // encrypt password
+        user.setPassword(
+                passwordEncoder.encode(request.getPassword())
+        );
+
+        user.setRole(
+                Role.valueOf(request.getRole())
+        );
 
         userRepository.save(user);
 

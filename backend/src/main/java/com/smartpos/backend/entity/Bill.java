@@ -1,9 +1,8 @@
 package com.smartpos.backend.entity;
 
-import java.util.List;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.CascadeType;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,14 +19,11 @@ public class Bill {
     private LocalDateTime billDate;
 
     @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<BillItem> billItems;
-
-    // Constructors
 
     public Bill() {
     }
-
-    // Getters and Setters
 
     public Long getId() {
         return id;

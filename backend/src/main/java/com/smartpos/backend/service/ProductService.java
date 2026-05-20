@@ -39,9 +39,13 @@ public class ProductService {
         Product existingProduct = productRepository.findById(id).orElse(null);
 
         if (existingProduct != null) {
+
             existingProduct.setName(product.getName());
             existingProduct.setPrice(product.getPrice());
             existingProduct.setQuantity(product.getQuantity());
+
+            // UPDATE CATEGORY
+            existingProduct.setCategory(product.getCategory());
 
             return productRepository.save(existingProduct);
         }
