@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
-import { getProducts, addProduct } from "../services/productService";
+import {
+  getProducts,
+  addProduct,
+  deleteProduct,
+} from "../services/productService";
 
 function Products() {
   const [products, setProducts] = useState([]);
@@ -45,6 +49,19 @@ function Products() {
     } catch (error) {
       console.error("Error saving product:", error);
       alert("Failed to save product");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteProduct(id);
+
+      alert("Product Deleted Successfully");
+
+      loadProducts();
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      alert("Failed to delete product");
     }
   };
 
@@ -111,6 +128,7 @@ function Products() {
               <th>Price</th>
               <th>Stock</th>
               <th>Category</th>
+              <th>Actions</th>
             </tr>
           </thead>
 
@@ -123,11 +141,23 @@ function Products() {
                   <td>{product.price}</td>
                   <td>{product.quantity}</td>
                   <td>{product.category}</td>
+
+                  <td>
+                    <button
+                      onClick={() =>
+                        handleDelete(product.id)
+                      }
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="5">No Products Found</td>
+                <td colSpan="6">
+                  No Products Found
+                </td>
               </tr>
             )}
           </tbody>
