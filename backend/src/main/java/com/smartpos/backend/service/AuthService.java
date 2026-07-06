@@ -5,7 +5,6 @@ import com.smartpos.backend.entity.Role;
 import com.smartpos.backend.entity.User;
 import com.smartpos.backend.repository.UserRepository;
 import com.smartpos.backend.security.JwtUtil;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,31 +21,14 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // LOGIN
-    public String login(String username, String password) {
-
-        User user = userRepository.findByUsername(username);
-
-        if (user == null) {
-            return "User not found";
-        }
-
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            return "Invalid password";
-        }
-
-        return jwtUtil.generateToken(
-                user.getUsername(),
-                user.getRole()
-        );
-    }
-
     // REGISTER
     public String register(RegisterRequest request) {
 
-        // username already exists
-        if (userRepository.findByUsername(request.getUsername()) != null) {
-            return "Username already exists";
+        User existingUser =
+                userRepository.findByUsername(request.getUsername());
+
+        if (existingUser != null) {
+            throw new RuntimeException("Username already exists");
         }
 
         User user = new User();
@@ -56,17 +38,40 @@ public class AuthService {
         user.setPhoneNumber(request.getPhoneNumber());
         user.setUsername(request.getUsername());
 
-        // encrypt password
         user.setPassword(
                 passwordEncoder.encode(request.getPassword())
         );
 
         user.setRole(
-                Role.valueOf(request.getRole())
+                Role.valueOf(
+                        request.getRole().toUpperCase()
+                )
         );
 
         userRepository.save(user);
 
         return "User Registered Successfully";
+    }
+
+    // LOGIN
+    public String login(String username, String password) {
+
+        User user = userRepository.findByUsername(username);
+
+        if (user == null) {
+            throw new RuntimeException("Invalid Username");
+        }
+
+        if (!passwordEncoder.matches(
+                password,
+                user.getPassword()
+        )) {
+            throw new RuntimeException("Invalid Password");
+        }
+
+        return jwtUtil.generateToken(
+                user.getUsername(),
+                user.getRole()
+        );
     }
 }
