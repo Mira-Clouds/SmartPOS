@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/bills";
+const API_URL = "http://localhost:8080/reports";
 
 const getAuthConfig = () => {
   const token = localStorage.getItem("token");
@@ -12,24 +12,16 @@ const getAuthConfig = () => {
   };
 };
 
-export const getBills = async () => {
+export const getDailySales = async () => {
   return await axios.get(
-    API_URL,
+    `${API_URL}/daily`,
     getAuthConfig()
   );
 };
 
-export const getBillById = async (id) => {
+export const getMonthlySales = async () => {
   return await axios.get(
-    `${API_URL}/${id}`,
-    getAuthConfig()
-  );
-};
-
-export const saveBill = async (bill) => {
-  return await axios.post(
-    API_URL,
-    bill,
+    `${API_URL}/monthly`,
     getAuthConfig()
   );
 };

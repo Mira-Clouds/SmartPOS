@@ -1,4 +1,8 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
 
 import LandingPage from "./pages/LandingPage";
 
@@ -6,6 +10,9 @@ import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
 
 import AdminDashboard from "./pages/Admin/Dashboard";
+import Products from "./pages/Admin/Products";
+import Categories from "./pages/Admin/Categories";
+import Reports from "./pages/Admin/Reports";
 
 import CashierDashboard from "./pages/Cashier/Dashboard";
 import Billing from "./pages/Cashier/Billing";
@@ -17,20 +24,65 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route
+          path="/"
+          element={<LandingPage />}
+        />
 
-        <Route path="/" element={<LandingPage />} />
+        <Route
+          path="/login"
+          element={<Login />}
+        />
 
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route
+          path="/register"
+          element={<Register />}
+        />
 
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route
+          path="/admin/dashboard"
+          element={<AdminDashboard />}
+        />
 
-        <Route path="/cashier/dashboard" element={<CashierDashboard />} />
-        <Route path="/cashier/billing" element={<Billing />} />
-        <Route path="/cashier/payment" element={<Payment />} />
-        <Route path="/cashier/view-price" element={<ViewPrice />} />
-        <Route path="/cashier/add-product" element={<AddProduct />} />
+        <Route
+          path="/admin/products"
+          element={<Products />}
+        />
 
+        <Route
+          path="/admin/categories"
+          element={<Categories />}
+        />
+
+        <Route
+          path="/admin/reports"
+          element={<Reports />}
+        />
+
+        <Route
+          path="/cashier/dashboard"
+          element={<CashierDashboard />}
+        />
+
+        <Route
+          path="/cashier/billing"
+          element={<Billing />}
+        />
+
+        <Route
+          path="/cashier/payment"
+          element={<Payment />}
+        />
+
+        <Route
+          path="/cashier/view-price"
+          element={<ViewPrice />}
+        />
+
+        <Route
+          path="/cashier/add-product"
+          element={<AddProduct />}
+        />
       </Routes>
     </BrowserRouter>
   );

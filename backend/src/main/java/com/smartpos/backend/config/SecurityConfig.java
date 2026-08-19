@@ -3,6 +3,7 @@ package com.smartpos.backend.config;
 import com.smartpos.backend.security.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -82,7 +83,10 @@ public class SecurityConfig {
 
         http
                 .cors(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable())
+
+                .csrf(csrf ->
+                        csrf.disable()
+                )
 
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
@@ -92,25 +96,76 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // PUBLIC APIs
+                        // =========================
+                        // PUBLIC
+                        // =========================
                         .requestMatchers(
                                 "/api/auth/**"
                         ).permitAll()
 
-                        // ADMIN ONLY
+                        // =========================
+                        // PRODUCTS - READ
+                        // ADMIN + CASHIER
+                        // =========================
                         .requestMatchers(
-                                "/dashboard/**",
-                                "/products/**",
-                                "/categories/**"
+                                HttpMethod.GET,
+                                "/products/**"
+                        ).hasAnyRole(
+                                "ADMIN",
+                                "CASHIER"
+                        )
+
+                        // =========================
+                        // PRODUCTS - CREATE
+                        // ADMIN ONLY
+                        // =========================
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/products/**"
                         ).hasRole("ADMIN")
 
+                        // =========================
+                        // PRODUCTS - UPDATE
+                        // ADMIN ONLY
+                        // =========================
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/products/**"
+                        ).hasRole("ADMIN")
+
+                        // =========================
+                        // PRODUCTS - DELETE
+                        // ADMIN ONLY
+                        // =========================
+                        .requestMatchers(
+                                HttpMethod.DELETE,
+                                "/products/**"
+                        ).hasRole("ADMIN")
+
+                        // =========================
+                        // ADMIN ONLY
+                        // =========================
+                        .requestMatchers(
+                                "/dashboard/**",
+                                "/categories/**",
+                                "/reports/**"
+                        ).hasRole("ADMIN")
+
+                        // =========================
                         // ADMIN + CASHIER
+                        // =========================
                         .requestMatchers(
                                 "/bills/**"
-                        ).hasAnyRole("ADMIN", "CASHIER")
+                        ).hasAnyRole(
+                                "ADMIN",
+                                "CASHIER"
+                        )
 
-                        // ALL OTHER APIs
-                        .anyRequest().authenticated()
+                        // =========================
+                        // OTHER REQUESTS
+                        // =========================
+                        .anyRequest()
+                        .authenticated()
                 )
 
                 .addFilterBefore(
